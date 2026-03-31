@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>社會科 | 統合學習平臺</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:     #0a0810;
+      --bg2:    #10121d;
+      --text:   #f0e8ff;
+      --dim:    #8a7a9a;
+    }
+    /* 篇章色彩主題 */
+    :root[data-chapter="1"] { --accent: #00d4ff; --accent-rgb: 0,212,255; }
+    :root[data-chapter="2"] { --accent: #ff9900; --accent-rgb: 255,153,0; }
+    :root[data-chapter="3"] { --accent: #00ff88; --accent-rgb: 0,255,136; }
+    :root[data-chapter="home"] { --accent: #a78bfa; --accent-rgb: 167,139,250; }
+
+    html, body {
+      width:100%; height:100%;
+      font-family:'Microsoft JhengHei','Segoe UI',sans-serif;
+      background:var(--bg); color:var(--text);
+      overflow:hidden; touch-action:manipulation;
+      -webkit-user-select:none; user-select:none;
+    }
+
+    .screen { position:fixed; inset:0; display:none; flex-direction:column; align-items:center; overflow-y:auto; }
+    .screen.active { display:flex; }
+
+    .back-btn {
+      position:fixed; top:.9rem; left:.9rem; z-index:50;
+      background:rgba(var(--accent-rgb),.1); border:1px solid var(--accent);
+      color:var(--accent); border-radius:8px; padding:.35rem .9rem;
+      font-size:.82rem; cursor:pointer; transition:background .2s; display:none;
+    }
+    .back-btn.show { display:block; }
+    .back-btn:hover { background:rgba(var(--accent-rgb),.25); }
+
+    /* ══ HOME ══ */
+    #screen-home { padding:2rem 1.5rem 3rem; gap:2rem; }
+    .home-header { text-align:center; padding-top:.5rem; }
+    .home-label { font-size:.7rem; letter-spacing:.3em; text-transform:uppercase; color:var(--dim); margin-bottom:.5rem; }
+    .home-title {
+      font-size:clamp(2rem,6vw,3.5rem); font-weight:900; line-height:1.1;
+      background:linear-gradient(135deg,#a78bfa,#00d4ff,#00ff88);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+      filter:drop-shadow(0 0 20px rgba(167,139,250,.5));
+    }
+    .home-sub { color:var(--dim); font-size:.9rem; margin-top:.5rem; line-height:1.55; }
+
+    .chapters-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.4rem; width:100%; max-width:900px; }
+    .chapter-card {
+      background:var(--bg2); border-radius:18px;
+      border:1px solid rgba(255,255,255,.07);
+      padding:2rem 1.8rem; cursor:pointer;
+      transition:transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
+    }
+    .chapter-card:hover { transform:translateY(-8px); }
+    .chapter-card[data-chapter="1"] { border-color:rgba(0,212,255,.3); }
+    .chapter-card[data-chapter="1"]:hover { box-shadow:0 18px 50px rgba(0,212,255,.2); }
+    .chapter-card[data-chapter="2"] { border-color:rgba(255,153,0,.3); }
+    .chapter-card[data-chapter="2"]:hover { box-shadow:0 18px 50px rgba(255,153,0,.2); }
+    .chapter-card[data-chapter="3"] { border-color:rgba(0,255,136,.3); }
+    .chapter-card[data-chapter="3"]:hover { box-shadow:0 18px 50px rgba(0,255,136,.2); }
+    .chapter-num { font-size:.68rem; letter-spacing:.2em; text-transform:uppercase; margin-bottom:.6rem; color:var(--dim); }
+    .chapter-icon { font-size:2.8rem; margin-bottom:.7rem; display:block; }
+    .chapter-title { font-size:1.35rem; font-weight:800; color:#fff; margin-bottom:.4rem; }
+    .chapter-tasks { color:var(--dim); font-size:.82rem; margin-bottom:.8rem; }
+    .chapter-arrow { display:inline-flex; align-items:center; gap:.4rem; font-size:.83rem; font-weight:700; color:var(--accent); }
+
+    /* ══ CHAPTER HOME ══ */
+    #screen-chapter1-home, #screen-chapter2-home, #screen-chapter3-home { padding:3rem 1.5rem 3rem; gap:2rem; }
+    .chapter-header { text-align:center; }
+    .chapter-label { font-size:.7rem; letter-spacing:.3em; text-transform:uppercase; color:var(--dim); margin-bottom:.5rem; }
+    .chapter-title-large {
+      font-size:clamp(1.6rem,5vw,2.4rem); font-weight:900; line-height:1.1;
+      color:#fff;
+    }
+    .chapter-title-large .accent { color:var(--accent); }
+
+    .missions-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1.4rem; width:100%; max-width:900px; }
+    .mission-card {
+      background:var(--bg2); border-radius:16px;
+      border:1.5px solid rgba(255,255,255,.08);
+      padding:1.6rem 1.5rem; cursor:pointer;
+      transition:transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
+    }
+    .mission-card:hover { transform:translateY(-6px); box-shadow:0 12px 35px rgba(var(--accent-rgb),.2); }
+    .mission-num { font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; color:var(--dim); margin-bottom:.5rem; }
+    .mission-icon { font-size:2.4rem; margin-bottom:.6rem; display:block; }
+    .mission-title { font-size:1.15rem; font-weight:800; color:#fff; margin-bottom:.3rem; }
+    .mission-desc { color:var(--dim); font-size:.82rem; line-height:1.5; margin-bottom:.8rem; }
+    .mission-arrow { display:inline-flex; align-items:center; gap:.4rem; font-size:.8rem; font-weight:700; color:var(--accent); }
+
+    /* ══ GAME COMMON ══ */
+    .game-screen { padding:3.5rem 1rem 2rem; gap:.8rem; min-height:100%; }
+    .game-header { text-align:center; }
+    .game-label { font-size:.68rem; letter-spacing:.25em; text-transform:uppercase; color:var(--dim); margin-bottom:.25rem; }
+    .game-title { font-size:clamp(1.2rem,3.5vw,1.7rem); font-weight:900; color:#fff; }
+    .game-title span { color:var(--accent); }
+
+    .prog-wrap { width:100%; max-width:580px; }
+    .prog-row { display:flex; justify-content:space-between; font-size:.75rem; color:var(--dim); margin-bottom:.3rem; }
+    .prog-row span { color:var(--accent); font-weight:700; }
+    .prog-bg { height:7px; background:rgba(255,255,255,.08); border-radius:8px; overflow:hidden; }
+    .prog-fill { height:100%; border-radius:8px; background:linear-gradient(90deg,var(--accent),rgba(var(--accent-rgb),.6)); transition:width .4s; box-shadow:0 0 8px var(--accent); }
+
+    /* ══ QUIZ ══ */
+    .quiz-box {
+      width:100%; max-width:600px;
+      background:var(--bg2); border-radius:16px;
+      border:1.5px solid rgba(255,255,255,.08);
+      padding:1.8rem 1.8rem 1.5rem; text-align:center;
+    }
+    .quiz-icon { font-size:3rem; margin-bottom:.8rem; display:block; }
+    .quiz-q { font-size:1rem; font-weight:700; color:#fff; line-height:1.6; margin-bottom:1rem; }
+    .quiz-choices { display:flex; flex-direction:column; gap:.5rem; }
+    .quiz-choice {
+      padding:.8rem 1.2rem; border-radius:11px;
+      border:1.5px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.04);
+      cursor:pointer; font-size:.9rem; font-weight:600;
+      text-align:left; transition:all .18s; color:var(--text);
+    }
+    .quiz-choice:hover:not(:disabled) { border-color:rgba(var(--accent-rgb),.5); background:rgba(var(--accent-rgb),.08); }
+    .quiz-choice:disabled { cursor:default; }
+    .quiz-choice.correct { border-color:#00ff88; background:rgba(0,255,136,.1); color:#00ff88; }
+    .quiz-choice.wrong   { border-color:#ff2244; background:rgba(255,34,68,.08); color:#ff2244; }
+    .quiz-explain {
+      margin-top:.8rem; padding:.75rem 1rem;
+      background:rgba(var(--accent-rgb),.08); border-radius:10px;
+      border-left:3px solid var(--accent);
+      font-size:.85rem; line-height:1.5; color:var(--text); text-align:left;
+    }
+
+    /* ══ CELEBRATION ══ */
+    .celebration-box {
+      text-align:center; padding:2rem 1.5rem;
+      animation:celebrate-in .6s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes celebrate-in {
+      0% { opacity:0; transform:scale(.8) translateY(20px); }
+      100% { opacity:1; transform:scale(1) translateY(0); }
+    }
+    .celebration-emoji { font-size:4rem; margin-bottom:1rem; display:block; animation:float 2s ease-in-out infinite; }
+    @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-15px); } }
+    .celebration-text { font-size:1.3rem; font-weight:800; color:#fff; margin-bottom:.5rem; }
+    .celebration-sub { font-size:.9rem; color:var(--dim); margin-bottom:1.5rem; }
+    .celebration-btn {
+      background:linear-gradient(135deg,rgba(var(--accent-rgb),.8),rgba(var(--accent-rgb),.5));
+      border:1px solid var(--accent); color:#fff; padding:.8rem 2rem;
+      border-radius:10px; font-size:.95rem; font-weight:700;
+      cursor:pointer; transition:all .3s;
+    }
+    .celebration-btn:hover { background:linear-gradient(135deg,rgba(var(--accent-rgb),1),rgba(var(--accent-rgb),.7)); transform:translateY(-2px); }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width:640px) {
+      .chapters-grid, .missions-grid { grid-template-columns:1fr; }
+      .home-title { font-size:2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════ MAIN HOME ════ -->
+<div id="screen-home" class="screen active">
+  <div class="home-header">
+    <div class="home-label">社會科學習平臺</div>
+    <h1 class="home-title">社會科探險</h1>
+    <p class="home-sub">探索臺灣的自然、飲食與文化<br>三個篇章，無限可能</p>
+  </div>
+  <div class="chapters-grid">
+    <div class="chapter-card" data-chapter="1" onclick="gotoChapter(1)">
+      <div class="chapter-num">篇章 一</div>
+      <div class="chapter-icon">🌍</div>
+      <div class="chapter-title">大地觀測</div>
+      <div class="chapter-tasks">3 個任務</div>
+      <div class="chapter-arrow">開始探險 →</div>
+    </div>
+    <div class="chapter-card" data-chapter="2" onclick="gotoChapter(2)">
+      <div class="chapter-num">篇章 二</div>
+      <div class="chapter-icon">🌾</div>
+      <div class="chapter-title">食農生活</div>
+      <div class="chapter-tasks">2 個任務</div>
+      <div class="chapter-arrow">開始探險 →</div>
+    </div>
+    <div class="chapter-card" data-chapter="3" onclick="gotoChapter(3)">
+      <div class="chapter-num">篇章 三</div>
+      <div class="chapter-icon">🏛️</div>
+      <div class="chapter-title">家鄉文化</div>
+      <div class="chapter-tasks">3 個任務</div>
+      <div class="chapter-arrow">開始探險 →</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ CHAPTER 1: 大地觀測 ════ -->
+<div id="screen-chapter1-home" class="screen">
+  <button class="back-btn show" onclick="goHome()">← 返回</button>
+  <div class="chapter-header">
+    <div class="chapter-label">篇章 一</div>
+    <h1 class="chapter-title-large">大地<span class="accent">觀測</span></h1>
+  </div>
+  <div class="missions-grid">
+    <div class="mission-card" onclick="startGame(1,1)">
+      <div class="mission-num">任務 一</div>
+      <div class="mission-icon">💧</div>
+      <div class="mission-title">水資源時光機</div>
+      <div class="mission-desc">從古至今的水資源故事</div>
+      <div class="mission-arrow">開始 →</div>
+    </div>
+    <div class="mission-card" onclick="startGame(1,2)">
+      <div class="mission-num">任務 二</div>
+      <div class="mission-icon">🌲</div>
+      <div class="mission-title">山林演變故事</div>
+      <div class="mission-desc">臺灣山林的過去與未來</div>
+      <div class="mission-arrow">開始 →</div>
+    </div>
+    <div class="mission-card" onclick="startGame(1,3)">
+      <div class="mission-num">任務 三</div>
+      <div class="mission-icon">🐟</div>
+      <div class="mission-title">漁業轉型挑戰</div>
+      <div class="mission-desc">從傳統到永續的漁業發展</div>
+      <div class="mission-arrow">開始 →</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ CHAPTER 2: 食農生活 ════ -->
+<div id="screen-chapter2-home" class="screen">
+  <button class="back-btn show" onclick="goHome()">← 返回</button>
+  <div class="chapter-header">
+    <div class="chapter-label">篇章 二</div>
+    <h1 class="chapter-title-large">食農<span class="accent">生活</span></h1>
+  </div>
+  <div class="missions-grid">
+    <div class="mission-card" onclick="startGame(2,1)">
+      <div class="mission-num">任務 一</div>
+      <div class="mission-icon">🚜</div>
+      <div class="mission-title">農耕時光機</div>
+      <div class="mission-desc">農業的演變與未來</div>
+      <div class="mission-arrow">開始 →</div>
+    </div>
+    <div class="mission-card" onclick="startGame(2,2)">
+      <div class="mission-num">任務 二</div>
+      <div class="mission-icon">🥬</div>
+      <div class="mission-title">食安衛士</div>
+      <div class="mission-desc">聰明選購，保護自己</div>
+      <div class="mission-arrow">開始 →</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ CHAPTER 3: 家鄉文化 ════ -->
+<div id="screen-chapter3-home" class="screen">
+  <button class="back-btn show" onclick="goHome()">← 返回</button>
+  <div class="chapter-header">
+    <div class="chapter-label">篇章 三</div>
+    <h1 class="chapter-title-large">家鄉<span class="accent">文化</span></h1>
+  </div>
+  <div class="missions-grid">
+    <div class="mission-card" onclick="startGame(3,1)">
+      <div class="mission-num">任務 一</div>
+      <div class="mission-icon">🏛️</div>
+      <div class="mission-title">人文古蹟探險</div>
+      <div class="mission-desc">家鄉的歷史建築與故事</div>
+      <div class="mission-arrow">開始 →</div>
+    </div>
+    <div class="mission-card" onclick="startGame(3,2)">
+      <div class="mission-num">任務 二</div>
+      <div class="mission-icon">🎭</div>
+      <div class="mission-title">民俗文化祭典</div>
+      <div class="mission-desc">傳統藝術與民俗活動</div>
+      <div class="mission-arrow">開始 →</div>
+    </div>
+    <div class="mission-card" onclick="startGame(3,3)">
+      <div class="mission-num">任務 三</div>
+      <div class="mission-icon">🌟</div>
+      <div class="mission-title">社區故事工坊</div>
+      <div class="mission-desc">文化保存與社區發展</div>
+      <div class="mission-arrow">開始 →</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ GAME SCREENS ════ -->
+<!-- 篇章1：水資源時光機 -->
+<div id="screen-game-1-1" class="screen game-screen">
+  <button class="back-btn show" onclick="goChapter(1)">← 返回</button>
+  <div class="game-header">
+    <div class="game-label">任務 一</div>
+    <h1 class="game-title">水資源<span>時光機</span></h1>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-row"><span id="progress-1-1">1</span> / 10</div>
+    <div class="prog-bg"><div class="prog-fill" id="prog-fill-1-1"></div></div>
+  </div>
+  <div class="quiz-box" id="quiz-box-1-1"></div>
+</div>
+
+<!-- 篇章1：山林演變故事 -->
+<div id="screen-game-1-2" class="screen game-screen">
+  <button class="back-btn show" onclick="goChapter(1)">← 返回</button>
+  <div class="game-header">
+    <div class="game-label">任務 二</div>
+    <h1 class="game-title">山林<span>演變故事</span></h1>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-row"><span id="progress-1-2">1</span> / 8</div>
+    <div class="prog-bg"><div class="prog-fill" id="prog-fill-1-2"></div></div>
+  </div>
+  <div class="quiz-box" id="quiz-box-1-2"></div>
+</div>
+
+<!-- 篇章1：漁業轉型挑戰 -->
+<div id="screen-game-1-3" class="screen game-screen">
+  <button class="back-btn show" onclick="goChapter(1)">← 返回</button>
+  <div class="game-header">
+    <div class="game-label">任務 三</div>
+    <h1 class="game-title">漁業<span>轉型挑戰</span></h1>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-row"><span id="progress-1-3">1</span> / 8</div>
+    <div class="prog-bg"><div class="prog-fill" id="prog-fill-1-3"></div></div>
+  </div>
+  <div class="quiz-box" id="quiz-box-1-3"></div>
+</div>
+
+<!-- 篇章2：農耕時光機 -->
+<div id="screen-game-2-1" class="screen game-screen">
+  <button class="back-btn show" onclick="goChapter(2)">← 返回</button>
+  <div class="game-header">
+    <div class="game-label">任務 一</div>
+    <h1 class="game-title">農耕<span>時光機</span></h1>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-row"><span id="progress-2-1">1</span> / 8</div>
+    <div class="prog-bg"><div class="prog-fill" id="prog-fill-2-1"></div></div>
+  </div>
+  <div class="quiz-box" id="quiz-box-2-1"></div>
+</div>
+
+<!-- 篇章2：食安衛士 -->
+<div id="screen-game-2-2" class="screen game-screen">
+  <button class="back-btn show" onclick="goChapter(2)">← 返回</button>
+  <div class="game-header">
+    <div class="game-label">任務 二</div>
+    <h1 class="game-title">食安<span>衛士</span></h1>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-row"><span id="progress-2-2">1</span> / 8</div>
+    <div class="prog-bg"><div class="prog-fill" id="prog-fill-2-2"></div></div>
+  </div>
+  <div class="quiz-box" id="quiz-box-2-2"></div>
+</div>
+
+<!-- 篇章3：人文古蹟探險 -->
+<div id="screen-game-3-1" class="screen game-screen">
+  <button class="back-btn show" onclick="goChapter(3)">← 返回</button>
+  <div class="game-header">
+    <div class="game-label">任務 一</div>
+    <h1 class="game-title">人文<span>古蹟探險</span></h1>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-row"><span id="progress-3-1">1</span> / 8</div>
+    <div class="prog-bg"><div class="prog-fill" id="prog-fill-3-1"></div></div>
+  </div>
+  <div class="quiz-box" id="quiz-box-3-1"></div>
+</div>
+
+<!-- 篇章3：民俗文化祭典 -->
+<div id="screen-game-3-2" class="screen game-screen">
+  <button class="back-btn show" onclick="goChapter(3)">← 返回</button>
+  <div class="game-header">
+    <div class="game-label">任務 二</div>
+    <h1 class="game-title">民俗<span>文化祭典</span></h1>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-row"><span id="progress-3-2">1</span> / 8</div>
+    <div class="prog-bg"><div class="prog-fill" id="prog-fill-3-2"></div></div>
+  </div>
+  <div class="quiz-box" id="quiz-box-3-2"></div>
+</div>
+
+<!-- 篇章3：社區故事工坊 -->
+<div id="screen-game-3-3" class="screen game-screen">
+  <button class="back-btn show" onclick="goChapter(3)">← 返回</button>
+  <div class="game-header">
+    <div class="game-label">任務 三</div>
+    <h1 class="game-title">社區<span>故事工坊</span></h1>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-row"><span id="progress-3-3">1</span> / 8</div>
+    <div class="prog-bg"><div class="prog-fill" id="prog-fill-3-3"></div></div>
+  </div>
+  <div class="quiz-box" id="quiz-box-3-3"></div>
+</div>
+
+<!-- ════ COMPLETION SCREENS ════ -->
+<div id="screen-complete-1-1" class="screen game-screen">
+  <div class="celebration-box">
+    <span class="celebration-emoji">🎉</span>
+    <div class="celebration-text">太棒了！</div>
+    <div class="celebration-sub">您已完成「水資源時光機」</div>
+    <button class="celebration-btn" onclick="goChapter(1)">回到任務列表</button>
+  </div>
+</div>
+<div id="screen-complete-1-2" class="screen game-screen">
+  <div class="celebration-box">
+    <span class="celebration-emoji">🎉</span>
+    <div class="celebration-text">太棒了！</div>
+    <div class="celebration-sub">您已完成「山林演變故事」</div>
+    <button class="celebration-btn" onclick="goChapter(1)">回到任務列表</button>
+  </div>
+</div>
+<div id="screen-complete-1-3" class="screen game-screen">
+  <div class="celebration-box">
+    <span class="celebration-emoji">🎉</span>
+    <div class="celebration-text">太棒了！</div>
+    <div class="celebration-sub">您已完成「漁業轉型挑戰」</div>
+    <button class="celebration-btn" onclick="goChapter(1)">回到任務列表</button>
+  </div>
+</div>
+<div id="screen-complete-2-1" class="screen game-screen">
+  <div class="celebration-box">
+    <span class="celebration-emoji">🎉</span>
+    <div class="celebration-text">太棒了！</div>
+    <div class="celebration-sub">您已完成「農耕時光機」</div>
+    <button class="celebration-btn" onclick="goChapter(2)">回到任務列表</button>
+  </div>
+</div>
+<div id="screen-complete-2-2" class="screen game-screen">
+  <div class="celebration-box">
+    <span class="celebration-emoji">🎉</span>
+    <div class="celebration-text">太棒了！</div>
+    <div class="celebration-sub">您已完成「食安衛士」</div>
+    <button class="celebration-btn" onclick="goChapter(2)">回到任務列表</button>
+  </div>
+</div>
+<div id="screen-complete-3-1" class="screen game-screen">
+  <div class="celebration-box">
+    <span class="celebration-emoji">🎉</span>
+    <div class="celebration-text">太棒了！</div>
+    <div class="celebration-sub">您已完成「人文古蹟探險」</div>
+    <button class="celebration-btn" onclick="goChapter(3)">回到任務列表</button>
+  </div>
+</div>
+<div id="screen-complete-3-2" class="screen game-screen">
+  <div class="celebration-box">
+    <span class="celebration-emoji">🎉</span>
+    <div class="celebration-text">太棒了！</div>
+    <div class="celebration-sub">您已完成「民俗文化祭典」</div>
+    <button class="celebration-btn" onclick="goChapter(3)">回到任務列表</button>
+  </div>
+</div>
+<div id="screen-complete-3-3" class="screen game-screen">
+  <div class="celebration-box">
+    <span class="celebration-emoji">🎉</span>
+    <div class="celebration-text">太棒了！</div>
+    <div class="celebration-sub">您已完成「社區故事工坊」</div>
+    <button class="celebration-btn" onclick="goChapter(3)">回到任務列表</button>
+  </div>
+</div>
+
+<script>
+// ════ QUIZ DATA ════
+const quizData = {
+  // 篇章1：大地觀測
+  '1-1': [ // 水資源時光機
+    {
+      q: '早期人們主要通過什麼方式運輸？',
+      choices: ['陸路商隊', '河運', '海運'],
+      correct: 1,
+      explain: '河運是最重要的運輸方式，河流資源至關重要。'
+    },
+    {
+      q: '臺灣的水資源主要來自哪裡？',
+      choices: ['地下水', '河流與雨水', '進口'],
+      correct: 1,
+      explain: '降雨和河流是臺灣最主要的水資源來源。'
+    },
+    {
+      q: '造成水資源短缺的主要原因是什麼？',
+      choices: ['人口增加導致用水量增加', '都市化與工業發展', '以上都是'],
+      correct: 2,
+      explain: '水資源短缺是多方面因素共同作用的結果。'
+    },
+    {
+      q: '興建水庫的主要目的是什麼？',
+      choices: ['蓄積雨水供日常使用', '發電與調節水資源', '觀光'],
+      correct: 1,
+      explain: '水庫可以儲存雨水、發電、調節用水。'
+    },
+    {
+      q: '水資源回收利用是什麼意思？',
+      choices: ['將污水重新淨化使用', '將雨水儲存', '減少洗澡次數'],
+      correct: 0,
+      explain: '回收水資源是指將使用過的水淨化後再次利用。'
+    },
+    {
+      q: '家庭中最簡單的節水方法是什麼？',
+      choices: ['關閉水龍頭', '安裝淨水器', '都不做'],
+      correct: 0,
+      explain: '隨時關閉水龍頭是最基本也最有效的節水方法。'
+    },
+    {
+      q: '農業用水在臺灣總用水量中的比例最高，應該如何改善？',
+      choices: ['停止灌溉農業', '推廣節水灌溉技術', '進口農產品'],
+      correct: 1,
+      explain: '推廣節水灌溉技術可以在保護農業的同時節水。'
+    },
+    {
+      q: '什麼是「水足跡」？',
+      choices: ['水在地上留下的痕跡', '生產產品所需的虛擬水量', '洗腳的水'],
+      correct: 1,
+      explain: '水足跡是指生產一樣產品所需要的全部水量。'
+    },
+    {
+      q: '為什麼要進行雨水收集？',
+      choices: ['好看', '減少自來水使用，涵養地下水', '浪費錢'],
+      correct: 1,
+      explain: '收集雨水可以減少對地下水的依賴。'
+    },
+    {
+      q: '全球暖化對水資源的影響最直接的是什麼？',
+      choices: ['改變降雨型態', '融化冰川', '以上都是'],
+      correct: 2,
+      explain: '全球暖化會改變降雨與氣候，影響整個水循環。'
+    }
+  ],
+  '1-2': [ // 山林演變故事
+    {
+      q: '原住民對待山林資源的智慧是什麼？',
+      choices: ['無限開採', '永續利用，與自然和諧共生', '完全禁用'],
+      correct: 1,
+      explain: '原住民智慧體現在永續利用與保護自然的平衡。'
+    },
+    {
+      q: '日治時期最主要砍伐的樹種是什麼？',
+      choices: ['樟樹', '檜木', '竹子'],
+      correct: 0,
+      explain: '樟樹是提煉樟腦的主要樹種，在日治時期大量砍伐。'
+    },
+    {
+      q: '修築哪條鐵路是為了運輸山林中砍下的木材？',
+      choices: ['縱貫線', '阿里山鐵路', '高雄線'],
+      correct: 1,
+      explain: '阿里山鐵路主要是為了運輸山林木材。'
+    },
+    {
+      q: '樟腦產業對臺灣經濟的意義是什麼？',
+      choices: ['很小', '帶來重要的外匯收入', '沒有意義'],
+      correct: 1,
+      explain: '樟腦是重要的出口商品，為臺灣帶來經濟收入。'
+    },
+    {
+      q: '現在的阿里山主要發展什麼產業？',
+      choices: ['木材運輸', '觀光與生態保護', '農業'],
+      correct: 1,
+      explain: '現代阿里山轉向生態觀光與保護森林資源。'
+    },
+    {
+      q: '造成山林破壞的主要因素是什麼？',
+      choices: ['過度開發', '氣候變遷', '以上都是'],
+      correct: 2,
+      explain: '山林破壞是多個因素共同導致的結果。'
+    },
+    {
+      q: '林業復興的主要方式是什麼？',
+      choices: ['重新大規模砍伐', '造林與生態保護', '放任不管'],
+      correct: 1,
+      explain: '現代林業強調保護與復育，而非開採。'
+    },
+    {
+      q: '阿里山的檜木林為什麼珍貴？',
+      choices: ['生長快速', '樹齡長，木質優良', '容易砍伐'],
+      correct: 1,
+      explain: '檜木需要數百年才能成熟，是珍貴的資源。'
+    }
+  ],
+  '1-3': [ // 漁業轉型挑戰
+    {
+      q: '早期臺灣人用什麼方式捕魚？',
+      choices: ['釣魚', '石滬與牽罟', '潛水'],
+      correct: 1,
+      explain: '石滬和牽罟是傳統的小規模捕魚方式。'
+    },
+    {
+      q: '現代漁業面臨的主要問題是什麼？',
+      choices: ['魚太多', '過度捕撈導致海洋資源枯竭', '漁民太少'],
+      correct: 1,
+      explain: '過度捕撈使海洋資源急劇減少。'
+    },
+    {
+      q: '水產養殖業對環境的潛在危害是什麼？',
+      choices: ['沒有危害', '污染水體', '有益環境'],
+      correct: 1,
+      explain: '養殖排放物如果未妥善處理會污染環境。'
+    },
+    {
+      q: '「永續漁業」的核心概念是什麼？',
+      choices: ['不捕魚', '平衡捕撈與資源復育', '只靠養殖'],
+      correct: 1,
+      explain: '永續漁業在滿足需求與保護資源間尋求平衡。'
+    },
+    {
+      q: '選海鮮時最應該看什麼？',
+      choices: ['價格', '認證標章與來源', '外觀'],
+      correct: 1,
+      explain: '選購有認證的海鮮能支持永續漁業。'
+    },
+    {
+      q: '海洋保護區的作用是什麼？',
+      choices: ['完全禁止捕魚', '保護海洋生態，讓資源恢復', '無關緊要'],
+      correct: 1,
+      explain: '海洋保護區讓魚類有恢復的機會。'
+    },
+    {
+      q: '漁民應該如何因應漁業轉型？',
+      choices: ['繼續過度捕撈', '學習永續漁法與多角化經營', '放棄漁業'],
+      correct: 1,
+      explain: '漁民需要主動適應並採用永續的漁法。'
+    },
+    {
+      q: '進口海鮮與本地海鮮哪個更永續？',
+      choices: ['都一樣', '看來源和捕撈方式', '進口更好'],
+      correct: 1,
+      explain: '需要了解具體來源和生產方式才能判斷。'
+    }
+  ],
+
+  // 篇章2：食農生活
+  '2-1': [ // 農耕時光機
+    {
+      q: '過去傳統農法的特點是什麼？',
+      choices: ['使用大量化學肥料', '依靠自然力量，利用動物與蟲類', '完全機械化'],
+      correct: 1,
+      explain: '傳統農法運用生態系統內的自然力量進行生產。'
+    },
+    {
+      q: '現代農業最大的挑戰是什麼？',
+      choices: ['提高產量', '在高產與環保間找到平衡', '完全回到傳統'],
+      correct: 1,
+      explain: '現代農業需要在食物需求與環境保護間平衡。'
+    },
+    {
+      q: '自然肥料有哪些？',
+      choices: ['堆肥、動物糞便、植物廢棄物', '只有化學肥料', '沒有'],
+      correct: 0,
+      explain: '自然肥料來自有機物的分解與循環利用。'
+    },
+    {
+      q: '農藥的好處是什麼？',
+      choices: ['完全無害', '能有效防止害蟲與病害', '沒有好處'],
+      correct: 1,
+      explain: '農藥在適當使用下能保護農作物。'
+    },
+    {
+      q: '農藥過度使用的危害是什麼？',
+      choices: ['沒有危害', '污染環境，傷害非靶標物種', '能淨化水體'],
+      correct: 1,
+      explain: '濫用農藥會破壞生態與污染環境。'
+    },
+    {
+      q: '農業機械化帶來的主要變化是什麼？',
+      choices: ['效率降低', '生產力提高，但耗能增加', '沒有變化'],
+      correct: 1,
+      explain: '機械化提高效率但也增加能源消耗與成本。'
+    },
+    {
+      q: '氣候變遷對農業的影響主要是什麼？',
+      choices: ['沒有影響', '改變季節與氣候，增加農民風險', '全是好的'],
+      correct: 1,
+      explain: '異常氣候使農業變得更不確定。'
+    },
+    {
+      q: '購買在地、當季農產品的優點是什麼？',
+      choices: ['沒有優點', '新鮮度高，減少運輸排放，支持農民', '價格更貴'],
+      correct: 1,
+      explain: '在地當季農產品更新鮮且環境衝擊更小。'
+    }
+  ],
+  '2-2': [ // 食安衛士
+    {
+      q: '什麼是「有機農產品」？',
+      choices: ['任何植物', '在無農藥、無化學肥料下生長', '進口產品'],
+      correct: 1,
+      explain: '有機農產品遵循嚴格的無化學輸入標準生長。'
+    },
+    {
+      q: '「產銷履歷」(TAP)的好處是什麼？',
+      choices: ['只是行銷', '可追蹤產品來源與生產過程', '沒有好處'],
+      correct: 1,
+      explain: '產銷履歷讓消費者了解食品的完整過程。'
+    },
+    {
+      q: 'CAS標章代表什麼？',
+      choices: ['隨意認證', '臺灣優質農產品認證', '無關'],
+      correct: 1,
+      explain: 'CAS是臺灣政府的食品安全認證標章。'
+    },
+    {
+      q: '智慧農業主要是指什麼？',
+      choices: ['不需要農民', '利用科技監測與優化生產', '只是行銷詞彙'],
+      correct: 1,
+      explain: '智慧農業用物聯網、數據分析提高效率與品質。'
+    },
+    {
+      q: '畜產品污染的主要來源是什麼？',
+      choices: ['完全安全', '飼料、環境與排放物', '不存在'],
+      correct: 1,
+      explain: '畜產的污染主要來自糞便處理與飼料。'
+    },
+    {
+      q: '解決畜產污染的方法有哪些？',
+      choices: ['停止養殖', '堆肥、沼氣發電、廢水處理', '完全忽視'],
+      correct: 1,
+      explain: '通過科學管理可以轉化污染為資源。'
+    },
+    {
+      q: '農產品上的農藥殘留如何檢驗？',
+      choices: ['憑感覺', '實驗室檢測', '看外觀'],
+      correct: 1,
+      explain: '農藥殘留需要專業檢測才能發現。'
+    },
+    {
+      q: '購買畜產品時，最應該看什麼標章？',
+      choices: ['無所謂', 'CAS、有機或友善認證', '價格'],
+      correct: 1,
+      explain: '認證標章代表通過食安檢驗與標準。'
+    }
+  ],
+
+  // 篇章3：家鄉文化（待開發）
+  '3-1': [ // 人文古蹟探險
+    {
+      q: '臺灣的古蹟通常代表什麼？',
+      choices: ['沒有意義', '過去的歷史與文化特徵', '只是觀光地點'],
+      correct: 1,
+      explain: '古蹟記錄著不同時期的歷史與文化。'
+    },
+    {
+      q: '保護古蹟的重要性在於什麼？',
+      choices: ['浪費錢', '保留文化記憶與教育資源', '沒有用'],
+      correct: 1,
+      explain: '古蹟是連接過去與現在的重要橋樑。'
+    },
+    {
+      q: '古蹟的修復需要考慮什麼？',
+      choices: ['只要漂亮', '保留原汁原味與使用現代技術的平衡', '隨意'],
+      correct: 1,
+      explain: '修復需要在保真與實用間找到平衡。'
+    },
+    {
+      q: '家鄉古蹟如何與現代社區融合？',
+      choices: ['拆除', '發展文化觀光與教育功能', '放著不管'],
+      correct: 1,
+      explain: '古蹟可以成為社區生活的一部分。'
+    },
+    {
+      q: '古蹟建築通常使用什麼材料？',
+      choices: ['鋼筋混凝土', '石頭、磚瓦、木材等本地材料', '塑膠'],
+      correct: 1,
+      explain: '傳統建築反映當地的地理與資源條件。'
+    },
+    {
+      q: '古蹟為社區帶來的經濟效益是什麼？',
+      choices: ['沒有', '文化觀光與文創產業', '只是負擔'],
+      correct: 1,
+      explain: '古蹟可以帶動地方文化經濟發展。'
+    },
+    {
+      q: '古蹟與地方認同感的關係是什麼？',
+      choices: ['無關', '古蹟強化居民的地方認同', '有害'],
+      correct: 1,
+      explain: '古蹟是地方身份與文化認同的象徵。'
+    },
+    {
+      q: '如何在文化保護與現代發展間平衡？',
+      choices: ['只保護不發展', '精心規劃，讓保護與發展互相支持', '全部拆除'],
+      correct: 1,
+      explain: '合理的規劃能同時實現保護與發展。'
+    }
+  ],
+  '3-2': [ // 民俗文化祭典
+    {
+      q: '民俗祭典的主要功能是什麼？',
+      choices: ['純娛樂', '傳承文化，凝聚社區', '商業活動'],
+      correct: 1,
+      explain: '祭典是文化傳承與社區連結的方式。'
+    },
+    {
+      q: '傳統藝術如何在現代保存？',
+      choices: ['放棄保護', '透過教育、表演與創新應用', '完全禁止變化'],
+      correct: 1,
+      explain: '傳統藝術需要在傳承與創新間找到生命力。'
+    },
+    {
+      q: '民間信仰祭祀的特點是什麼？',
+      choices: ['迷信', '反映地方風俗與對自然的尊重', '無關'],
+      correct: 1,
+      explain: '民間信仰承載著深層的文化意義。'
+    },
+    {
+      q: '舞龍舞獅代表什麼文化意涵？',
+      choices: ['單純娛樂', '祈求豐收與好運的傳統', '沒有意義'],
+      correct: 1,
+      explain: '舞龍舞獅源於對自然力量的敬畏。'
+    },
+    {
+      q: '廟會文化對社區的影響是什麼？',
+      choices: ['負面', '促進社區參與與文化認同', '無關'],
+      correct: 1,
+      explain: '廟會是社區凝聚力的重要來源。'
+    },
+    {
+      q: '傳統手工藝面臨的挑戰是什麼？',
+      choices: ['沒有挑戰', '青年流失與市場競爭', '都很好'],
+      correct: 1,
+      explain: '許多傳統手工藝正面臨後繼無人。'
+    },
+    {
+      q: '如何發展文化創意產業？',
+      choices: ['完全複製傳統', '保留核心，融入現代設計與應用', '完全放棄'],
+      correct: 1,
+      explain: '創意融合能賦予傳統藝術新生命。'
+    },
+    {
+      q: '民俗表演藝術的教育價值是什麼？',
+      choices: ['沒有', '傳承知識與強化文化認同', '有害'],
+      correct: 1,
+      explain: '表演藝術是活態文化教育的重要方式。'
+    }
+  ],
+  '3-3': [ // 社區故事工坊
+    {
+      q: '社區發展的核心是什麼？',
+      choices: ['外來投資', '居民參與與自主性', '政府命令'],
+      correct: 1,
+      explain: '真正的社區發展來自居民的主動參與。'
+    },
+    {
+      q: '文化保存與社區發展的關係是什麼？',
+      choices: ['互相衝突', '相互支持，文化是發展的基礎', '無關'],
+      correct: 1,
+      explain: '文化認同能驅動可持續的社區發展。'
+    },
+    {
+      q: '社區故事的重要性是什麼？',
+      choices: ['只是娛樂', '建立認同感與凝聚力', '無用'],
+      correct: 1,
+      explain: '故事能深化人們對社區的理解與歸屬感。'
+    },
+    {
+      q: '文創商品對社區的意義是什麼？',
+      choices: ['純商業', '展現特色，帶動經濟，傳承文化', '只是行銷'],
+      correct: 1,
+      explain: '文創產品能實現文化與經濟的雙贏。'
+    },
+    {
+      q: '社區居民如何參與文化保存？',
+      choices: ['交給政府', '透過記錄、學習與實踐', '無法參與'],
+      correct: 1,
+      explain: '每個居民都是文化保護的重要力量。'
+    },
+    {
+      q: '地方特色產業如何發展？',
+      choices: ['照搬他人經驗', '基於在地資源與文化特色創新', '放棄努力'],
+      correct: 1,
+      explain: '真正的地方特色來自獨特的文化與資源。'
+    },
+    {
+      q: '社區觀光應該如何進行？',
+      choices: ['無限度開發', '永續發展，保護環境與文化', '禁止旅遊'],
+      correct: 1,
+      explain: '觀光應該在保護社區與共同繁榮間平衡。'
+    },
+    {
+      q: '年輕人回鄉對社區的影響是什麼？',
+      choices: ['負面', '帶來創新能量與發展機會', '無關'],
+      correct: 1,
+      explain: '新世代的參與能為傳統社區注入活力。'
+    }
+  ]
+};
+
+// ════ STATE ════
+let currentChapter = null;
+let currentGame = null;
+let currentQuestion = 0;
+
+// ════ NAVIGATION ════
+function showScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('screen');
+  document.getElementById(screenId).classList.add('active');
+}
+
+function goHome() {
+  document.documentElement.setAttribute('data-chapter', 'home');
+  currentChapter = null;
+  currentGame = null;
+  showScreen('screen-home');
+}
+
+function gotoChapter(ch) {
+  document.documentElement.setAttribute('data-chapter', ch);
+  currentChapter = ch;
+  showScreen(`screen-chapter${ch}-home`);
+}
+
+function goChapter(ch) {
+  gotoChapter(ch);
+}
+
+function startGame(chapter, task) {
+  document.documentElement.setAttribute('data-chapter', chapter);
+  currentChapter = chapter;
+  currentGame = `${chapter}-${task}`;
+  currentQuestion = 0;
+  renderQuestion();
+  showScreen(`screen-game-${chapter}-${task}`);
+}
+
+// ════ QUIZ LOGIC ════
+function renderQuestion() {
+  const quiz = quizData[currentGame];
+  const q = quiz[currentQuestion];
+  const total = quiz.length;
+  const el = document.getElementById(`quiz-box-${currentGame}`);
+  const progId = `progress-${currentGame}`;
+  const fillId = `prog-fill-${currentGame}`;
+
+  document.getElementById(progId).textContent = currentQuestion + 1;
+  document.getElementById(fillId).style.width = ((currentQuestion + 1) / total * 100) + '%';
+
+  el.innerHTML = `
+    <div class="quiz-icon">${['💧', '🌲', '🐟', '🚜', '🥬', '🏛️', '🎭', '🌟'][currentQuestion % 8]}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-choices">
+      ${q.choices.map((c, i) => `
+        <button class="quiz-choice" onclick="selectAnswer(${i}, ${q.correct})">${c}</button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function selectAnswer(selected, correct) {
+  const quiz = quizData[currentGame];
+  const q = quiz[currentQuestion];
+  const buttons = document.querySelectorAll(`#quiz-box-${currentGame} .quiz-choice`);
+
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correct) btn.classList.add('correct');
+    if (i === selected && selected !== correct) btn.classList.add('wrong');
+  });
+
+  const el = document.getElementById(`quiz-box-${currentGame}`);
+  const explain = document.createElement('div');
+  explain.className = 'quiz-explain';
+  explain.textContent = q.explain;
+  el.appendChild(explain);
+
+  setTimeout(() => {
+    currentQuestion++;
+    if (currentQuestion < quiz.length) {
+      renderQuestion();
+    } else {
+      showScreen(`screen-complete-${currentGame}`);
+    }
+  }, 2200);
+}
+
+// ════ INIT ════
+document.addEventListener('DOMContentLoaded', () => {
+  document.documentElement.setAttribute('data-chapter', 'home');
+});
+</script>
+</body>
+</html>
