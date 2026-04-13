@@ -466,6 +466,35 @@
 </div>
 
 <script>
+// ════ URL 參數讀取 & 頁面標題動態更新 ════
+function getGradeParameter() {
+  const params = new URLSearchParams(window.location.search);
+  const grade = params.get('grade'); // 會得到 '4-2', '5-1' 等
+  return grade || '4-2'; // 默認 4-2
+}
+
+const gradeLabels = {
+  '4-2': '四年級下學期',
+  '5-1': '五年級上學期',
+  '5-2': '五年級下學期',
+  '6-1': '六年級上學期',
+  '6-2': '六年級下學期'
+};
+
+const currentGrade = getGradeParameter();
+const gradeLabel = gradeLabels[currentGrade] || gradeLabels['4-2'];
+
+// 更新頁面標題
+document.title = `🗺️ 社會科探險 - ${gradeLabel}學習之旅`;
+
+// 更新首頁標題（在頁面加載後）
+document.addEventListener('DOMContentLoaded', () => {
+  const homeTitle = document.querySelector('.home-title');
+  if (homeTitle) {
+    homeTitle.textContent = `🗺️ ${gradeLabel}社會科`;
+  }
+});
+
 // ════ QUIZ DATA ════
 const quizData = {
   // 篇章1：大地觀測
