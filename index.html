@@ -173,21 +173,21 @@
     <p class="home-sub">探索臺灣的自然、飲食與文化<br>三個篇章，無限可能</p>
   </div>
   <div class="chapters-grid">
-    <div class="chapter-card" data-chapter="1" onclick="gotoChapter(1)">
+    <div class="chapter-card" data-chapter="1">
       <div class="chapter-num">篇章 一</div>
       <div class="chapter-icon">🌍</div>
       <div class="chapter-title">大地觀測</div>
       <div class="chapter-tasks">3 個任務</div>
       <div class="chapter-arrow">開始探險 →</div>
     </div>
-    <div class="chapter-card" data-chapter="2" onclick="gotoChapter(2)">
+    <div class="chapter-card" data-chapter="2">
       <div class="chapter-num">篇章 二</div>
       <div class="chapter-icon">🌾</div>
       <div class="chapter-title">食農生活</div>
       <div class="chapter-tasks">2 個任務</div>
       <div class="chapter-arrow">開始探險 →</div>
     </div>
-    <div class="chapter-card" data-chapter="3" onclick="gotoChapter(3)">
+    <div class="chapter-card" data-chapter="3">
       <div class="chapter-num">篇章 三</div>
       <div class="chapter-icon">🏛️</div>
       <div class="chapter-title">家鄉文化</div>
@@ -199,27 +199,27 @@
 
 <!-- ════ CHAPTER 1: 大地觀測 ════ -->
 <div id="screen-chapter1-home" class="screen">
-  <button class="back-btn show" onclick="goHome()">← 返回</button>
+  <button class="back-btn show" data-action="home">← 返回</button>
   <div class="chapter-header">
     <div class="chapter-label">篇章 一</div>
     <h1 class="chapter-title-large">大地<span class="accent">觀測</span></h1>
   </div>
   <div class="missions-grid">
-    <div class="mission-card" onclick="startGame(1,1)">
+    <div class="mission-card" data-chapter="1" data-task="1">
       <div class="mission-num">任務 一</div>
       <div class="mission-icon">💧</div>
       <div class="mission-title">水資源時光機</div>
       <div class="mission-desc">從古至今的水資源故事</div>
       <div class="mission-arrow">開始 →</div>
     </div>
-    <div class="mission-card" onclick="startGame(1,2)">
+    <div class="mission-card" data-chapter="1" data-task="2">
       <div class="mission-num">任務 二</div>
       <div class="mission-icon">🌲</div>
       <div class="mission-title">山林演變故事</div>
       <div class="mission-desc">臺灣山林的過去與未來</div>
       <div class="mission-arrow">開始 →</div>
     </div>
-    <div class="mission-card" onclick="startGame(1,3)">
+    <div class="mission-card" data-chapter="1" data-task="3">
       <div class="mission-num">任務 三</div>
       <div class="mission-icon">🐟</div>
       <div class="mission-title">漁業轉型挑戰</div>
@@ -231,20 +231,20 @@
 
 <!-- ════ CHAPTER 2: 食農生活 ════ -->
 <div id="screen-chapter2-home" class="screen">
-  <button class="back-btn show" onclick="goHome()">← 返回</button>
+  <button class="back-btn show" data-action="home">← 返回</button>
   <div class="chapter-header">
     <div class="chapter-label">篇章 二</div>
     <h1 class="chapter-title-large">食農<span class="accent">生活</span></h1>
   </div>
   <div class="missions-grid">
-    <div class="mission-card" onclick="startGame(2,1)">
+    <div class="mission-card" data-chapter="2" data-task="1">
       <div class="mission-num">任務 一</div>
       <div class="mission-icon">🚜</div>
       <div class="mission-title">農耕時光機</div>
       <div class="mission-desc">農業的演變與未來</div>
       <div class="mission-arrow">開始 →</div>
     </div>
-    <div class="mission-card" onclick="startGame(2,2)">
+    <div class="mission-card" data-chapter="2" data-task="2">
       <div class="mission-num">任務 二</div>
       <div class="mission-icon">🥬</div>
       <div class="mission-title">食安衛士</div>
@@ -256,27 +256,27 @@
 
 <!-- ════ CHAPTER 3: 家鄉文化 ════ -->
 <div id="screen-chapter3-home" class="screen">
-  <button class="back-btn show" onclick="goHome()">← 返回</button>
+  <button class="back-btn show" data-action="home">← 返回</button>
   <div class="chapter-header">
     <div class="chapter-label">篇章 三</div>
     <h1 class="chapter-title-large">家鄉<span class="accent">文化</span></h1>
   </div>
   <div class="missions-grid">
-    <div class="mission-card" onclick="startGame(3,1)">
+    <div class="mission-card" data-chapter="3" data-task="1">
       <div class="mission-num">任務 一</div>
       <div class="mission-icon">🏛️</div>
       <div class="mission-title">人文古蹟探險</div>
       <div class="mission-desc">家鄉的歷史建築與故事</div>
       <div class="mission-arrow">開始 →</div>
     </div>
-    <div class="mission-card" onclick="startGame(3,2)">
+    <div class="mission-card" data-chapter="3" data-task="2">
       <div class="mission-num">任務 二</div>
       <div class="mission-icon">🎭</div>
       <div class="mission-title">民俗文化祭典</div>
       <div class="mission-desc">傳統藝術與民俗活動</div>
       <div class="mission-arrow">開始 →</div>
     </div>
-    <div class="mission-card" onclick="startGame(3,3)">
+    <div class="mission-card" data-chapter="3" data-task="3">
       <div class="mission-num">任務 三</div>
       <div class="mission-icon">🌟</div>
       <div class="mission-title">社區故事工坊</div>
@@ -289,7 +289,7 @@
 <!-- ════ GAME SCREENS ════ -->
 <!-- 篇章1：水資源時光機 -->
 <div id="screen-game-1-1" class="screen game-screen">
-  <button class="back-btn show" onclick="goChapter(1)">← 返回</button>
+  <button class="back-btn show" data-action="chapter" data-chapter="1">← 返回</button>
   <div class="game-header">
     <div class="game-label">任務 一</div>
     <h1 class="game-title">水資源<span>時光機</span></h1>
@@ -303,7 +303,7 @@
 
 <!-- 篇章1：山林演變故事 -->
 <div id="screen-game-1-2" class="screen game-screen">
-  <button class="back-btn show" onclick="goChapter(1)">← 返回</button>
+  <button class="back-btn show" data-action="chapter" data-chapter="1">← 返回</button>
   <div class="game-header">
     <div class="game-label">任務 二</div>
     <h1 class="game-title">山林<span>演變故事</span></h1>
@@ -317,7 +317,7 @@
 
 <!-- 篇章1：漁業轉型挑戰 -->
 <div id="screen-game-1-3" class="screen game-screen">
-  <button class="back-btn show" onclick="goChapter(1)">← 返回</button>
+  <button class="back-btn show" data-action="chapter" data-chapter="1">← 返回</button>
   <div class="game-header">
     <div class="game-label">任務 三</div>
     <h1 class="game-title">漁業<span>轉型挑戰</span></h1>
@@ -331,7 +331,7 @@
 
 <!-- 篇章2：農耕時光機 -->
 <div id="screen-game-2-1" class="screen game-screen">
-  <button class="back-btn show" onclick="goChapter(2)">← 返回</button>
+  <button class="back-btn show" data-action="chapter" data-chapter="2">← 返回</button>
   <div class="game-header">
     <div class="game-label">任務 一</div>
     <h1 class="game-title">農耕<span>時光機</span></h1>
@@ -345,7 +345,7 @@
 
 <!-- 篇章2：食安衛士 -->
 <div id="screen-game-2-2" class="screen game-screen">
-  <button class="back-btn show" onclick="goChapter(2)">← 返回</button>
+  <button class="back-btn show" data-action="chapter" data-chapter="2">← 返回</button>
   <div class="game-header">
     <div class="game-label">任務 二</div>
     <h1 class="game-title">食安<span>衛士</span></h1>
@@ -359,7 +359,7 @@
 
 <!-- 篇章3：人文古蹟探險 -->
 <div id="screen-game-3-1" class="screen game-screen">
-  <button class="back-btn show" onclick="goChapter(3)">← 返回</button>
+  <button class="back-btn show" data-action="chapter" data-chapter="3">← 返回</button>
   <div class="game-header">
     <div class="game-label">任務 一</div>
     <h1 class="game-title">人文<span>古蹟探險</span></h1>
@@ -373,7 +373,7 @@
 
 <!-- 篇章3：民俗文化祭典 -->
 <div id="screen-game-3-2" class="screen game-screen">
-  <button class="back-btn show" onclick="goChapter(3)">← 返回</button>
+  <button class="back-btn show" data-action="chapter" data-chapter="3">← 返回</button>
   <div class="game-header">
     <div class="game-label">任務 二</div>
     <h1 class="game-title">民俗<span>文化祭典</span></h1>
@@ -387,7 +387,7 @@
 
 <!-- 篇章3：社區故事工坊 -->
 <div id="screen-game-3-3" class="screen game-screen">
-  <button class="back-btn show" onclick="goChapter(3)">← 返回</button>
+  <button class="back-btn show" data-action="chapter" data-chapter="3">← 返回</button>
   <div class="game-header">
     <div class="game-label">任務 三</div>
     <h1 class="game-title">社區<span>故事工坊</span></h1>
@@ -405,7 +405,7 @@
     <span class="celebration-emoji">🎉</span>
     <div class="celebration-text">太棒了！</div>
     <div class="celebration-sub">您已完成「水資源時光機」</div>
-    <button class="celebration-btn" onclick="goChapter(1)">回到任務列表</button>
+    <button class="celebration-btn" data-action="chapter" data-chapter="1">回到任務列表</button>
   </div>
 </div>
 <div id="screen-complete-1-2" class="screen game-screen">
@@ -413,7 +413,7 @@
     <span class="celebration-emoji">🎉</span>
     <div class="celebration-text">太棒了！</div>
     <div class="celebration-sub">您已完成「山林演變故事」</div>
-    <button class="celebration-btn" onclick="goChapter(1)">回到任務列表</button>
+    <button class="celebration-btn" data-action="chapter" data-chapter="1">回到任務列表</button>
   </div>
 </div>
 <div id="screen-complete-1-3" class="screen game-screen">
@@ -421,7 +421,7 @@
     <span class="celebration-emoji">🎉</span>
     <div class="celebration-text">太棒了！</div>
     <div class="celebration-sub">您已完成「漁業轉型挑戰」</div>
-    <button class="celebration-btn" onclick="goChapter(1)">回到任務列表</button>
+    <button class="celebration-btn" data-action="chapter" data-chapter="1">回到任務列表</button>
   </div>
 </div>
 <div id="screen-complete-2-1" class="screen game-screen">
@@ -429,7 +429,7 @@
     <span class="celebration-emoji">🎉</span>
     <div class="celebration-text">太棒了！</div>
     <div class="celebration-sub">您已完成「農耕時光機」</div>
-    <button class="celebration-btn" onclick="goChapter(2)">回到任務列表</button>
+    <button class="celebration-btn" data-action="chapter" data-chapter="2">回到任務列表</button>
   </div>
 </div>
 <div id="screen-complete-2-2" class="screen game-screen">
@@ -437,7 +437,7 @@
     <span class="celebration-emoji">🎉</span>
     <div class="celebration-text">太棒了！</div>
     <div class="celebration-sub">您已完成「食安衛士」</div>
-    <button class="celebration-btn" onclick="goChapter(2)">回到任務列表</button>
+    <button class="celebration-btn" data-action="chapter" data-chapter="2">回到任務列表</button>
   </div>
 </div>
 <div id="screen-complete-3-1" class="screen game-screen">
@@ -445,7 +445,7 @@
     <span class="celebration-emoji">🎉</span>
     <div class="celebration-text">太棒了！</div>
     <div class="celebration-sub">您已完成「人文古蹟探險」</div>
-    <button class="celebration-btn" onclick="goChapter(3)">回到任務列表</button>
+    <button class="celebration-btn" data-action="chapter" data-chapter="3">回到任務列表</button>
   </div>
 </div>
 <div id="screen-complete-3-2" class="screen game-screen">
@@ -453,7 +453,7 @@
     <span class="celebration-emoji">🎉</span>
     <div class="celebration-text">太棒了！</div>
     <div class="celebration-sub">您已完成「民俗文化祭典」</div>
-    <button class="celebration-btn" onclick="goChapter(3)">回到任務列表</button>
+    <button class="celebration-btn" data-action="chapter" data-chapter="3">回到任務列表</button>
   </div>
 </div>
 <div id="screen-complete-3-3" class="screen game-screen">
@@ -461,7 +461,7 @@
     <span class="celebration-emoji">🎉</span>
     <div class="celebration-text">太棒了！</div>
     <div class="celebration-sub">您已完成「社區故事工坊」</div>
-    <button class="celebration-btn" onclick="goChapter(3)">回到任務列表</button>
+    <button class="celebration-btn" data-action="chapter" data-chapter="3">回到任務列表</button>
   </div>
 </div>
 
@@ -924,7 +924,6 @@ let currentQuestion = 0;
 // ════ NAVIGATION ════
 function showScreen(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(screenId).classList.add('screen');
   document.getElementById(screenId).classList.add('active');
 }
 
@@ -932,6 +931,8 @@ function goHome() {
   document.documentElement.setAttribute('data-chapter', 'home');
   currentChapter = null;
   currentGame = null;
+  currentQuestion = 0;
+  window.scrollTo(0, 0);
   showScreen('screen-home');
 }
 
@@ -946,12 +947,20 @@ function goChapter(ch) {
 }
 
 function startGame(chapter, task) {
+  if (typeof chapter !== 'number' || typeof task !== 'number') return;
+  if (chapter < 1 || chapter > 3) return;
+  const maxTasks = { 1: 3, 2: 2, 3: 3 };
+  if (task < 1 || task > (maxTasks[chapter] || 0)) return;
+
+  const gameKey = `${chapter}-${task}`;
+  if (!quizData[gameKey]) return;
+
   document.documentElement.setAttribute('data-chapter', chapter);
   currentChapter = chapter;
-  currentGame = `${chapter}-${task}`;
+  currentGame = gameKey;
   currentQuestion = 0;
   renderQuestion();
-  showScreen(`screen-game-${chapter}-${task}`);
+  showScreen(`screen-game-${gameKey}`);
 }
 
 // ════ QUIZ LOGIC ════
@@ -966,19 +975,47 @@ function renderQuestion() {
   document.getElementById(progId).textContent = currentQuestion + 1;
   document.getElementById(fillId).style.width = ((currentQuestion + 1) / total * 100) + '%';
 
-  el.innerHTML = `
-    <div class="quiz-icon">${['💧', '🌲', '🐟', '🚜', '🥬', '🏛️', '🎭', '🌟'][currentQuestion % 8]}</div>
-    <div class="quiz-q">${q.q}</div>
-    <div class="quiz-choices">
-      ${q.choices.map((c, i) => `
-        <button class="quiz-choice" onclick="selectAnswer(${i}, ${q.correct})">${c}</button>
-      `).join('')}
-    </div>
-  `;
+  el.innerHTML = '';
+  const iconDiv = document.createElement('div');
+  iconDiv.className = 'quiz-icon';
+  iconDiv.textContent = ['💧', '🌲', '🐟', '🚜', '🥬', '🏛️', '🎭', '🌟'][currentQuestion % 8];
+  el.appendChild(iconDiv);
+
+  const qDiv = document.createElement('div');
+  qDiv.className = 'quiz-q';
+  qDiv.textContent = q.q;
+  el.appendChild(qDiv);
+
+  const choicesDiv = document.createElement('div');
+  choicesDiv.className = 'quiz-choices';
+  q.choices.forEach((choice, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-choice';
+    btn.textContent = choice;
+    btn.dataset.choiceIndex = i;
+    btn.dataset.correctIndex = q.correct;
+    choicesDiv.appendChild(btn);
+  });
+  el.appendChild(choicesDiv);
+
+  const choiceButtons = el.querySelectorAll('.quiz-choice');
+  choiceButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const selected = parseInt(e.target.dataset.choiceIndex);
+      const correct = parseInt(e.target.dataset.correctIndex);
+      selectAnswer(selected, correct);
+    });
+  });
 }
 
 function selectAnswer(selected, correct) {
+  if (!currentGame || !quizData[currentGame]) return;
   const quiz = quizData[currentGame];
+  if (!quiz || currentQuestion < 0 || currentQuestion >= quiz.length) return;
+  if (typeof selected !== 'number' || typeof correct !== 'number') return;
+  if (selected < 0 || selected >= quiz[currentQuestion].choices.length) return;
+  if (correct < 0 || correct >= quiz[currentQuestion].choices.length) return;
+
   const q = quiz[currentQuestion];
   const buttons = document.querySelectorAll(`#quiz-box-${currentGame} .quiz-choice`);
 
@@ -1004,9 +1041,43 @@ function selectAnswer(selected, correct) {
   }, 2200);
 }
 
+// ════ EVENT LISTENERS ════
+function initializeEventListeners() {
+  document.addEventListener('click', (e) => {
+    const chapterCard = e.target.closest('.chapter-card');
+    if (chapterCard) {
+      const chapter = parseInt(chapterCard.dataset.chapter);
+      gotoChapter(chapter);
+      return;
+    }
+
+    const missionCard = e.target.closest('.mission-card');
+    if (missionCard) {
+      const chapter = parseInt(missionCard.dataset.chapter);
+      const task = parseInt(missionCard.dataset.task);
+      startGame(chapter, task);
+      return;
+    }
+
+    const backBtn = e.target.closest('[data-action="home"]');
+    if (backBtn) {
+      goHome();
+      return;
+    }
+
+    const chapterBtn = e.target.closest('[data-action="chapter"]');
+    if (chapterBtn) {
+      const chapter = parseInt(chapterBtn.dataset.chapter);
+      gotoChapter(chapter);
+      return;
+    }
+  });
+}
+
 // ════ INIT ════
 document.addEventListener('DOMContentLoaded', () => {
   document.documentElement.setAttribute('data-chapter', 'home');
+  initializeEventListeners();
 });
 </script>
 </body>
